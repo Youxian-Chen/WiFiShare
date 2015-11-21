@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -47,12 +46,16 @@ public class ShareWifiFragment extends Fragment {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkApData()) {
+                Log.d(TAG, "share button clicked");
+                if (checkWrongApData()) {
+                    Log.d(TAG, "check failed");
                     getAlertDialog(getActivity());
                 } else {
+                    Log.d(TAG, "check ok");
                     ssidEditText.setEnabled(false);
                     passwordEditText.setEnabled(false);
                     startWifiAp();
+                    ((MainActivity)getActivity()).openNfcReader();
                 }
             }
         });
@@ -68,22 +71,27 @@ public class ShareWifiFragment extends Fragment {
 
             }
         });
+        builder.create();
 
     }
 
-    private boolean checkApData() {
+    private boolean checkWrongApData() {
+        Log.d(TAG, passwordEditText.getText().length()+"");
+        Log.d(TAG, passwordEditText.getText().toString().length()+"");
+        Log.d(TAG, passwordEditText.getText().toString());
         if (ssidEditText.getText().toString().isEmpty()) {
-            return false;
+            return true;
         } else if (passwordEditText.getText().toString().isEmpty()) {
-            return false;
+            return true;
         } else if (passwordEditText.getText().toString().length() < 8) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void startWifiAp() {
         setWifiConfig();
+        mWiFiApManager = new WiFiApManager(getActivity());
         boolean isEnabled = mWiFiApManager.setWifiApEnabled(mWifiConfig, true);
         Log.d(TAG, "wifi ap enable: " + isEnabled);
     }
@@ -103,5 +111,9 @@ public class ShareWifiFragment extends Fragment {
         mWifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
         Log.d(TAG, "ID: " + mWifiConfig.SSID);
         Log.d(TAG, "password: " + mWifiConfig.preSharedKey);
+    }
+
+    public String getWifiApConfig() {
+        return mWifiConfig.SSID + "-" + mWifiConfig.preSharedKey;
     }
 }

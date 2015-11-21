@@ -44,4 +44,12 @@
         android:id="@+id/share_button_share"
         android:layout_marginLeft="100dp"
         android:layout_below="@+id/password_edit_share"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hint_text_share"
+        android:textSize="40dp"
+        android:text="Back-To-Back Touch\nShare Your WiFi"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>
