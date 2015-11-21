@@ -23,6 +23,7 @@ public class ShareWifiFragment extends Fragment {
     private EditText ssidEditText;
     private EditText passwordEditText;
     private Button shareButton;
+    private Button stopButton;
     private WiFiApManager mWiFiApManager;
     private WifiConfiguration mWifiConfig;
 
@@ -55,7 +56,24 @@ public class ShareWifiFragment extends Fragment {
                     ssidEditText.setEnabled(false);
                     passwordEditText.setEnabled(false);
                     startWifiAp();
+                    stopButton.setEnabled(true);
+                    shareButton.setEnabled(false);
                     ((MainActivity)getActivity()).openNfcReader();
+                }
+            }
+        });
+        stopButton = (Button) view.findViewById(R.id.stop_button_share);
+        stopButton.setEnabled(false);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "stop sharing button clicked");
+                if (mWifiConfig != null) {
+                    mWiFiApManager.setWifiApEnabled(mWifiConfig, false);
+                    mWifiConfig = null;
+                    shareButton.setEnabled(true);
+                    stopButton.setEnabled(false);
+                    ((MainActivity)getActivity()).closeNfcReader();
                 }
             }
         });

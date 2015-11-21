@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
 
     private NfcAdapter mNfcAdapter;
     private IntentFilter mIntentFilter;
-    private BroadcastReceiver mReceiver;
+    private MainReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
         mWiFiApManager = new WiFiApManager(this);
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(MyHostApduService.WIFI_CONFIG);
+        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mReceiver = new MainReceiver(this);
 
 
@@ -75,6 +77,14 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
         }
     }
 
+    public void closeNfcReader() {
+        if (mNfcAdapter != null) {
+            if (mNfcAdapter.isEnabled()) {
+                mNfcAdapter.disableReaderMode(this);
+            }
+        }
+    }
+
     private byte[] createSelectAidApdu(byte[] aid) {
         byte[] result = new byte[6 + aid.length];
         System.arraycopy(CLA_INS_P1_P2, 0, result, 0, CLA_INS_P1_P2.length);
@@ -105,18 +115,23 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
     }
 
     public void connectToWiFi(String wifiConfig) {
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        String[] separatedString = wifiConfig.split("-");
-        WifiConfiguration mWifiConfig = new WifiConfiguration();
-        mWifiConfig.SSID = "\"" + separatedString[0] + "\"";
-        mWifiConfig.preSharedKey = "\"" + separatedString[1] + "\"";
-        int res = wifiManager.addNetwork(mWifiConfig);
-        Log.d("WifiPreference", "add Network returned " + res);
-        wifiManager.disconnect();
-        boolean isEnable = wifiManager.enableNetwork(res, true);
-        Log.d("WifiPreference", "enable Network returned " + isEnable);
-        wifiManager.reconnect();
-        getAcceptWifiFragment().setStatusConnected();
+        if (mReceiver.isConnectToWifi()) {
+            Log.d(TAG, "already connect to wifi");
+        } else {
+            Log.d(TAG, "try to connect to wifi");
+            WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+            String[] separatedString = wifiConfig.split("-");
+            WifiConfiguration mWifiConfig = new WifiConfiguration();
+            mWifiConfig.SSID = "\"" + separatedString[0] + "\"";
+            mWifiConfig.preSharedKey = "\"" + separatedString[1] + "\"";
+            int res = wifiManager.addNetwork(mWifiConfig);
+            Log.d(TAG, "add Network returned " + res);
+            wifiManager.disconnect();
+            boolean isEnable = wifiManager.enableNetwork(res, true);
+            Log.d(TAG, "enable Network returned " + isEnable);
+            wifiManager.reconnect();
+            getAcceptWifiFragment().setStatusConnected();
+        }
     }
 
     private void replaceFragment(Fragment fragment, boolean addToBackStack) {
