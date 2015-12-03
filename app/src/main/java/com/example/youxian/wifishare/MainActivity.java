@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
 
         //setWifiConfig();
         //setWiFiHotSpot(mWifiConfig);
-        //connectToWiFiHotSpot();
+        connectToWiFiHotSpot();
     }
 
     @Override
@@ -156,6 +156,11 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
                 public void onAcceptClick() {
                     replaceFragment(getAcceptWifiFragment(), true);
                 }
+
+                @Override
+                public void onDisconnectClick() {
+                    disconnectClick();
+                }
             });
         }
         return mMainFragment;
@@ -199,14 +204,35 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
 
     private void connectToWiFiHotSpot() {
         WifiManager wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        for (WifiConfiguration wifiConfiguration: wifiManager.getConfiguredNetworks()) {
+            wifiManager.disableNetwork(wifiConfiguration.networkId);
+        }
         mWifiConfig = new WifiConfiguration();
         mWifiConfig.SSID = "\"test5678\"";
         mWifiConfig.preSharedKey = "\"love0925\"";
+        mWifiConfig.priority = 100000;
         int res = wifiManager.addNetwork(mWifiConfig);
         Log.d("WifiPreference", "add Network returned " + res);
         wifiManager.disconnect();
         boolean isEnable = wifiManager.enableNetwork(res, true);
         Log.d("WifiPreference", "enable Network returned " + isEnable);
+        wifiManager.reconnect();
+    }
+
+    private void disconnectClick() {
+        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        wifiManager.disconnect();
+        if (mWifiConfig != null) {
+            Log.d(TAG, mWifiConfig.SSID + mWifiConfig.networkId);
+        }
+        for (WifiConfiguration config: wifiManager.getConfiguredNetworks()) {
+            Log.d(TAG, config.SSID);
+            if (config.SSID.equals(mWifiConfig.SSID)) {
+                wifiManager.removeNetwork(config.networkId);
+            } else {
+                wifiManager.enableNetwork(config.networkId, true);
+            }
+        }
         wifiManager.reconnect();
     }
 }

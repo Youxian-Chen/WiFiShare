@@ -14,7 +14,7 @@ import android.widget.Button;
 public class MainFragment extends Fragment {
     private Button shareButton;
     private Button acceptButton;
-
+    private Button disconnectButton;
     private MainListener mMainListener;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,13 @@ public class MainFragment extends Fragment {
                     mMainListener.onAcceptClick();
             }
         });
+        disconnectButton = (Button) view.findViewById(R.id.disconnect_button_main);
+        disconnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMainListener.onDisconnectClick();
+            }
+        });
     }
 
     public void setListener(MainListener listener) {
@@ -55,5 +62,6 @@ public class MainFragment extends Fragment {
     public interface MainListener {
         void onShareClick();
         void onAcceptClick();
+        void onDisconnectClick();
     }
 }

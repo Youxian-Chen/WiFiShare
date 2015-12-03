@@ -22,4 +22,9 @@
         android:id="@+id/accept_button_main"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/middle_text_main"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="disconnect"
+        android:id="@+id/disconnect_button_main"/>
 </RelativeLayout>
