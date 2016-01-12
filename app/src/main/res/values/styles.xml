@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ButtonMainActivity">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/orange_80</item>
+        <item name="android:padding">3dp</item>
+    </style>
+
 </resources>

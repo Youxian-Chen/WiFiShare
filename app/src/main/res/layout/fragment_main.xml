@@ -4,9 +4,10 @@
     android:layout_height="match_parent">
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Share wifi"
+        android:layout_width="@dimen/activity_button_minWidth"
+        android:layout_height="@dimen/activity_button_Height"
+        style="@style/ButtonMainActivity"
+        android:text="@string/share_wifi"
         android:id="@+id/share_button_main"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/middle_text_main"/>
