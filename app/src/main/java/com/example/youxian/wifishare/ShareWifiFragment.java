@@ -1,12 +1,12 @@
 package com.example.youxian.wifishare;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +43,7 @@ public class ShareWifiFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ssidEditText = (EditText) view.findViewById(R.id.ssid_edit_share);
         passwordEditText = (EditText) view.findViewById(R.id.password_edit_share);
-        shareButton = (Button) view.findViewById(R.id.share_button_share);
+        shareButton = (Button) view.findViewById(R.id.enable_button_share);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +62,7 @@ public class ShareWifiFragment extends Fragment {
                 }
             }
         });
-        stopButton = (Button) view.findViewById(R.id.stop_button_share);
+        stopButton = (Button) view.findViewById(R.id.disable_button_share);
         stopButton.setEnabled(false);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override

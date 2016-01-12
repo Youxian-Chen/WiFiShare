@@ -1,9 +1,5 @@
 package com.example.youxian.wifishare;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -13,23 +9,26 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.io.IOException;
 
-public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
+public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback{
     private static final String TAG = MainActivity.class.getName();
-
+    private static final String Fragment_TAG = "fragment_tag";
     private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
     private static final byte[] AID_ANDROID = { (byte)0xF0, 0x2, 0x03, 0x04, 0x05, 0x06, 0x07 };
 
     private WiFiApManager mWiFiApManager;
     private WifiConfiguration mWifiConfig;
 
-
     private ShareWifiFragment mShareWifiFragment;
     private AcceptWifiFragment mAcceptWifiFragment;
-    private MainFragment mMainFragment;
 
     private NfcAdapter mNfcAdapter;
     private IntentFilter mIntentFilter;
@@ -64,7 +63,21 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
     }
 
     private void initView() {
-        replaceFragment(getMainFragment(), false);
+        Button shareButton = (Button) findViewById(R.id.share_button_main);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceFragment(getShareWifiFragment(), true);
+            }
+        });
+
+        Button acceptButton = (Button) findViewById(R.id.accept_button_main);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceFragment(getAcceptWifiFragment(), true);
+            }
+        });
     }
 
     public void openNfcReader() {
@@ -135,30 +148,12 @@ public class MainActivity extends Activity implements NfcAdapter.ReaderCallback{
     }
 
     private void replaceFragment(Fragment fragment, boolean addToBackStack) {
-        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
-        ft.replace(R.id.container_main, fragment, "tag");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container_main, fragment, Fragment_TAG);
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
         ft.commit();
-    }
-
-    private MainFragment getMainFragment() {
-        if (mMainFragment == null) {
-            mMainFragment = new MainFragment();
-            mMainFragment.setListener(new MainFragment.MainListener() {
-                @Override
-                public void onShareClick() {
-                    replaceFragment(getShareWifiFragment(), true);
-                }
-
-                @Override
-                public void onAcceptClick() {
-                    replaceFragment(getAcceptWifiFragment(), true);
-                }
-            });
-        }
-        return mMainFragment;
     }
 
     private ShareWifiFragment getShareWifiFragment() {
