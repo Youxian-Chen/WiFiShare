@@ -7,4 +7,9 @@
     <dimen name="activity_button_minWidth">96dp</dimen>
     <dimen name="activity_button_Height">48dp</dimen>
     <dimen name="activity_text_minHeight">60dp</dimen>
+
+    <!-- fragment share -->
+    <dimen name="share_edit_Width">280dp</dimen>
+    <dimen name="share_edit_Height">60dp</dimen>
+    <dimen name="share_tips_Height">200dp</dimen>
 </resources>
