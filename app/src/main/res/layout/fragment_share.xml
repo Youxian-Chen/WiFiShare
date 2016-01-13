@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="30dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:id="@+id/share_container">
 
     <EditText
         android:layout_width="@dimen/share_edit_Width"

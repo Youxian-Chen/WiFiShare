@@ -6,11 +6,16 @@
     <string name="share_wifi">Share Wifi</string>
     <string name="receive_wifi">Receive Wifi</string>
 
-    <string name="ssid">Wifi HotSpot Name</string>
+    <string name="ssid">Wifi SSID</string>
     <string name="password">Password</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="share_tips"> back-to-back\ntouch other devices\nto share wifi hotspot</string>
 
     <string name="receive_tips">Wait for sharing...</string>
+
+
+    <string name="alert_title">invalid settings</string>
+    <string name="alert_text">ssid and password can\'t be empty and password at least has 8 chs</string>
+    <string name="alert_ok_button">ok</string>
 </resources>
