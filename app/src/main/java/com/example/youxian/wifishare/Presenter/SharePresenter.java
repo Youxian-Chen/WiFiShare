@@ -3,22 +3,35 @@ package com.example.youxian.wifishare.Presenter;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.util.Log;
 
+import com.example.youxian.wifishare.MainActivity;
 import com.example.youxian.wifishare.WiFiApManager;
+
+import java.io.IOException;
 
 /**
  * Created by Youxian on 1/13/16.
  */
-public class SharePresenter {
+public class SharePresenter implements NfcAdapter.ReaderCallback {
     private static final String TAG = SharePresenter.class.getName();
+    private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
+    private static final byte[] AID_ANDROID = { (byte)0xF0, 0x2, 0x03, 0x04, 0x05, 0x06, 0x07 };
+    private static final String WIFI_SHARE = "WiFiShare";
 
     private static SharePresenter mInstance;
-
+    private Context mContext;
+    private NfcAdapter mNfcAdapter;
     private View mView;
     private WiFiApManager mWiFiApManager;
     private WifiManager mWifiManager;
     private WifiConfiguration mWifiConfig;
+
+    private String mSSID;
+    private String mPassword;
 
     public static SharePresenter getInstance() {
         if (mInstance == null) {
@@ -38,7 +51,26 @@ public class SharePresenter {
     public void initialize(Context context) {
         mWiFiApManager = new WiFiApManager(context);
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
         mView.disableStopButton();
+    }
+
+    public void onResume(Context context) {
+        mContext = context;
+        if (mNfcAdapter != null) {
+            if (mNfcAdapter.isEnabled()) {
+                mNfcAdapter.enableReaderMode((MainActivity) context, this, NfcAdapter.FLAG_READER_NFC_A |
+                        NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
+            }
+        }
+    }
+
+    public void onPause(Context context) {
+        if (mNfcAdapter != null) {
+            if (mNfcAdapter.isEnabled()) {
+               mNfcAdapter.disableReaderMode((MainActivity) context);
+            }
+        }
     }
 
     public void validateConfig(String ssid, String password) {
@@ -68,6 +100,8 @@ public class SharePresenter {
     }
 
     private void setWifiConfig(String ssid, String password) {
+        mSSID = ssid;
+        mPassword = password;
         mWifiConfig = new WifiConfiguration();
         mWifiConfig.SSID = ssid;
         mWifiConfig.preSharedKey = password;
@@ -80,6 +114,37 @@ public class SharePresenter {
         mWifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
         mWifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
         mWifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+    }
+
+    @Override
+    public void onTagDiscovered(Tag tag) {
+        IsoDep isoDep = IsoDep.get(tag);
+        try {
+            isoDep.connect();
+            byte[] response = isoDep.transceive(createSelectAidApdu(AID_ANDROID));
+            String resString = new String(response);
+            Log.d(TAG, "select application response: " + resString);
+            if (resString.equals(WIFI_SHARE)) {
+                isoDep.transceive(getWifiApConfig().getBytes());
+                Log.d(TAG, "pass wifi hotspot config");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private byte[] createSelectAidApdu(byte[] aid) {
+        byte[] result = new byte[6 + aid.length];
+        System.arraycopy(CLA_INS_P1_P2, 0, result, 0, CLA_INS_P1_P2.length);
+        result[4] = (byte)aid.length;
+        System.arraycopy(aid, 0, result, 5, aid.length);
+        result[result.length - 1] = 0;
+        return result;
+    }
+
+    private String getWifiApConfig() {
+        return mSSID + "-" + mPassword;
     }
 
     public interface View {

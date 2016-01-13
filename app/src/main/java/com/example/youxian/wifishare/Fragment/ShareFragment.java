@@ -79,6 +79,13 @@ public class ShareFragment extends Fragment implements SharePresenter.View {
     @Override
     public void onResume() {
         super.onResume();
+        mSharePresenter.onResume(getActivity());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSharePresenter.onPause(getActivity());
     }
 
     @Override
