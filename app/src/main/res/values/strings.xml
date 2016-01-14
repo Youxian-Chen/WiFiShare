@@ -19,5 +19,5 @@
     <string name="alert_text">ssid and password can\'t be empty and password at least has 8 chs</string>
     <string name="alert_ok_button">ok</string>
 
-    <string name="status_text">Connect to wifi successfully</string>
+    <string name="status_text">Connect successfully</string>
 </resources>

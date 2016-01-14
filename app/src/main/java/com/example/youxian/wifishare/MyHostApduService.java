@@ -1,9 +1,9 @@
 package com.example.youxian.wifishare;
 
-import android.content.Intent;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 import android.util.Log;
+
 
 /**
  * Created by Youxian on 11/21/15.
@@ -11,6 +11,7 @@ import android.util.Log;
 public class MyHostApduService extends HostApduService {
     public static final String WIFI_CONFIG = "wifi_config";
     private static final String TAG = HostApduService.class.getName();
+    private RxBus mRxBus = RxBus.getInstance();
     @Override
     public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
         if (selectAidApdu(commandApdu)) {
@@ -19,10 +20,7 @@ public class MyHostApduService extends HostApduService {
         } else {
             String mWifiCofig = new String(commandApdu);
             if (mWifiCofig.contains("-")) {
-                Intent wifiConfigIntent = new Intent();
-                wifiConfigIntent.setAction(WIFI_CONFIG);
-                wifiConfigIntent.putExtra(WIFI_CONFIG, mWifiCofig);
-                sendBroadcast(wifiConfigIntent);
+                mRxBus.send(mWifiCofig);
             }
         }
         return new byte[0];

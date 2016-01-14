@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.youxian.wifishare.Fragment.AcceptFragment;
+import com.example.youxian.wifishare.Fragment.ShareFragment;
+
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback{
@@ -67,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                replaceFragment(getShareWifiFragment(), true);
+                //replaceFragment(getShareWifiFragment(), true);
+                replaceFragment(new ShareFragment(), true);
             }
         });
 
@@ -75,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                replaceFragment(getAcceptWifiFragment(), true);
+                //replaceFragment(getAcceptWifiFragment(), true);
+                replaceFragment(new AcceptFragment(), true);
             }
         });
     }
