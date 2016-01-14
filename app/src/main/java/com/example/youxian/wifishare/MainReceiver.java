@@ -26,21 +26,16 @@ public class MainReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        Log.d(TAG, action);
         if (MyHostApduService.WIFI_CONFIG.equals(action)) {
-            Log.d(TAG, "get wifi config");
             String config = intent.getStringExtra(MyHostApduService.WIFI_CONFIG);
             mActivity.connectToWiFi(config);
         } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
-            Log.d(TAG, "connectivity action");
             ConnectivityManager conMan = (ConnectivityManager)
                     context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo netInfo = conMan.getActiveNetworkInfo();
             if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                Log.d(TAG, "Have Wifi Connection");
                 isConnectToWifi = true;
             } else {
-                Log.d(TAG, "Don't have Wifi Connection");
                 isConnectToWifi = false;
             }
         }

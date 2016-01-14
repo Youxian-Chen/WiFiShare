@@ -1,6 +1,7 @@
 package com.example.youxian.wifishare.Presenter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
@@ -21,6 +22,8 @@ public class SharePresenter implements NfcAdapter.ReaderCallback {
     private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
     private static final byte[] AID_ANDROID = { (byte)0xF0, 0x2, 0x03, 0x04, 0x05, 0x06, 0x07 };
     private static final String WIFI_SHARE = "WiFiShare";
+    private static final String WIFI_SHARE_SSID = "WiFiShare_ssid";
+    private static final String WIFI_SHARE_PASSWORD = "WiFiShare_password";
 
     private static SharePresenter mInstance;
     private Context mContext;
@@ -53,6 +56,7 @@ public class SharePresenter implements NfcAdapter.ReaderCallback {
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
         mView.disableStopButton();
+        getWifiConfig(context);
     }
 
     public void onResume(Context context) {
@@ -81,6 +85,7 @@ public class SharePresenter implements NfcAdapter.ReaderCallback {
             mView.enableStopButton();
             setWifiConfig(ssid, password);
             startWifiAp();
+            storeWifiConfig(ssid, password);
         } else {
             mView.showAlertDialog();
         }
@@ -114,6 +119,21 @@ public class SharePresenter implements NfcAdapter.ReaderCallback {
         mWifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
         mWifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
         mWifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+    }
+
+    private void storeWifiConfig(String ssid, String password) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(WIFI_SHARE, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString(WIFI_SHARE_SSID, ssid).apply();
+        sharedPreferences.edit().putString(WIFI_SHARE_PASSWORD, password).apply();
+    }
+
+    private void getWifiConfig(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(WIFI_SHARE, Context.MODE_PRIVATE);
+        String ssid = sharedPreferences.getString(WIFI_SHARE_SSID, null);
+        String password = sharedPreferences.getString(WIFI_SHARE_PASSWORD,  null);
+        if (ssid != null && password != null) {
+            mView.showWifiConfig(ssid, password);
+        }
     }
 
     @Override
@@ -155,5 +175,6 @@ public class SharePresenter implements NfcAdapter.ReaderCallback {
         void enableShareButton();
         void disableStopButton();
         void enableStopButton();
+        void showWifiConfig(String ssid, String password);
     }
 }

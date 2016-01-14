@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //replaceFragment(getShareWifiFragment(), true);
                 replaceFragment(new ShareFragment(), true);
             }
         });
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //replaceFragment(getAcceptWifiFragment(), true);
                 replaceFragment(new AcceptFragment(), true);
             }
         });

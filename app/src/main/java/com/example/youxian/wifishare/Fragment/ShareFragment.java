@@ -134,4 +134,10 @@ public class ShareFragment extends Fragment implements SharePresenter.View {
     public void enableStopButton() {
         disbleButton.setEnabled(true);
     }
+
+    @Override
+    public void showWifiConfig(String ssid, String password) {
+        ssidEditText.setText(ssid);
+        passwordEditText.setText(password);
+    }
 }
